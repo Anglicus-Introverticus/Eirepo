@@ -52,7 +52,7 @@
     }
   });
 
-  // Keep the prototype forms usable while the JSON catalogue is still being built.
+  // Route every section search through the shared catalogue search page.
   const path = location.pathname.toLowerCase();
   const scopedPage = path.includes('/pages/cc/') || path.includes('/pages/pc/');
   const curriculum = path.includes('/cc/') ? 'CC' : path.includes('/pc/') ? 'PC' : '';
@@ -67,18 +67,17 @@
         }
       });
     } else if (path.includes('/pages/tools') || path.includes('/pages/tests') || path.includes('/pages/extras')) {
-      form.action = '../search.html';
+      form.action = 'search.html';
       const type = path.includes('tools') ? 'tool' : path.includes('tests') ? 'test' : 'extra';
-      if (!form.querySelector('[name="type"]')) {
+      if (!form.querySelector('input[type="hidden"][name="type"]')) {
         const hidden = document.createElement('input'); hidden.type = 'hidden'; hidden.name = 'type'; hidden.value = type; form.append(hidden);
       }
     }
     const selects = [...form.querySelectorAll('select')];
-    const names = ['subject', 'grade', 'type', 'language'];
+    const names = ['subject', 'grade', 'subtype', 'language'];
     selects.forEach((select, i) => {
       if (!select.name) select.name = names[i] || 'filter' + (i + 1);
       select.setAttribute('aria-label', select.getAttribute('aria-label') || select.name.replace(/-/g, ' '));
-      [...select.options].forEach(option => { if (!option.value) option.value = option.textContent.trim(); });
     });
     const searchInput = form.querySelector('input[type="search"]');
     if (searchInput && !searchInput.name) searchInput.name = 'q';
