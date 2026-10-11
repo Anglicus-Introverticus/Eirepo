@@ -66,7 +66,7 @@
           const hidden = document.createElement('input'); hidden.type = 'hidden'; hidden.name = name; hidden.value = value; form.append(hidden);
         }
       });
-    } else if (path.endsWith('/pages/tools.html') || path.endsWith('/pages/tests.html') || path.endsWith('/pages/extras.html')) {
+    } else if (path.includes('/pages/tools') || path.includes('/pages/tests') || path.includes('/pages/extras')) {
       form.action = '../search.html';
       const type = path.includes('tools') ? 'tool' : path.includes('tests') ? 'test' : 'extra';
       if (!form.querySelector('[name="type"]')) {
