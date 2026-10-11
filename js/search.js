@@ -6,7 +6,7 @@
   if (!form || !resultsNode || !statusNode || !countNode) return;
 
   const params = new URLSearchParams(location.search);
-  const fields = ['curriculum', 'type', 'grade', 'subject', 'language', 'year'];
+  const fields = ['curriculum', 'type', 'grade', 'subject', 'language', 'year', 'subtype'];
   const normalise = value => String(value ?? '')
     .normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLocaleLowerCase().trim();
   const typeLabels = {
@@ -44,6 +44,10 @@
     for (const key of ['grade', 'subject', 'language', 'year']) {
       if (filters[key] && normalise(item[key]) !== normalise(filters[key])) return false;
     }
+    if (filters.subtype) {
+      const categories = [item.subtype, item.category, item.format, item.tags, item.type].filter(Boolean).flat().map(normalise);
+      if (!categories.some(value => value === normalise(filters.subtype) || value.includes(normalise(filters.subtype)))) return false;
+    }
     const haystack = searchableText(item);
     return queryWords.every(word => haystack.includes(word));
   }
@@ -51,7 +55,8 @@
   function safeWebUrl(value) {
     if (!value || typeof value !== 'string') return '';
     try {
-      const url = new URL(value, location.href);
+      const root = new URL('../', location.href);
+      const url = new URL(value, root);
       return url.protocol === 'https:' || url.protocol === 'http:' ? url.href : '';
     } catch {
       return '';
