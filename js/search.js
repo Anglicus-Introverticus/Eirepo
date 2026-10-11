@@ -128,7 +128,7 @@
 
       const filters = Object.fromEntries(fields.map(key => [key, (params.get(key) || '').trim()]));
       const query = normalise(params.get('q') || '');
-      const queryWords = query.split(/\s+/).filter(Boolean);
+      const queryWords = query.split(/\s+/).filter(Boolean).map(word => ({ maths: 'mathematics', math: 'mathematics' }[word] || word));
       const matchesList = resources.filter(item => item && matches(item, filters, queryWords));
       resultsNode.replaceChildren();
       if (matchesList.length) matchesList.forEach(item => resultsNode.append(renderCard(item)));
