@@ -54,7 +54,7 @@
 
   // Keep the prototype forms usable while the JSON catalogue is still being built.
   const path = location.pathname.toLowerCase();
-  const scopedPage = /\\/pages\\/(cc|pc)\\/(books|past-papers|notes)\\.html$/.test(path);
+  const scopedPage = path.includes('/pages/cc/') || path.includes('/pages/pc/');
   const curriculum = path.includes('/cc/') ? 'CC' : path.includes('/pc/') ? 'PC' : '';
   const category = path.includes('past-papers') ? 'past-paper' : path.includes('books') ? 'book' : path.includes('notes') ? 'notes' : '';
   document.querySelectorAll('form.filters, .search form').forEach(form => {
@@ -66,7 +66,7 @@
           const hidden = document.createElement('input'); hidden.type = 'hidden'; hidden.name = name; hidden.value = value; form.append(hidden);
         }
       });
-    } else if (/\\/pages\\/(tools|tests|extras)\\.html$/.test(path)) {
+    } else if (path.endsWith('/pages/tools.html') || path.endsWith('/pages/tests.html') || path.endsWith('/pages/extras.html')) {
       form.action = '../search.html';
       const type = path.includes('tools') ? 'tool' : path.includes('tests') ? 'test' : 'extra';
       if (!form.querySelector('[name="type"]')) {
