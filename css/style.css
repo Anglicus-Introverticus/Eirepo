@@ -5,3 +5,31 @@ button,select{cursor:pointer}
 button:disabled{cursor:not-allowed;opacity:.6}
 @media(max-width:760px){.filters button,.search form button{min-height:44px}.filters select,.filters input{min-height:44px}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+
+/* Phase 2: catalogue search and result cards */
+.page .filters{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin-top:18px}
+.page .filters input,.page .filters select{width:100%;min-height:44px}
+.page .filters button{min-height:44px;padding:10px 18px}
+.catalogue-section{margin-top:32px}
+.results-heading{display:flex;align-items:baseline;justify-content:space-between;gap:16px;margin-bottom:14px}
+.results-heading h2{font-size:26px;margin:0}
+.results-heading .muted{font-size:12px}
+.resource-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.resource-card{min-width:0;padding:20px;background:var(--surface);border:1px solid var(--line);display:flex;flex-direction:column;align-items:flex-start}
+.resource-meta{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+.resource-pill{display:inline-block;padding:4px 8px;background:#d5c5a8;color:var(--brown);font-size:10px;font-weight:800}
+.muted-pill{background:#d9d7c6;color:#514b3f}
+.resource-title{font-size:21px;line-height:1.25;margin:0 0 8px;overflow-wrap:anywhere}
+.resource-details{font-size:12px;margin:0 0 8px;color:var(--muted)}
+.resource-description{font-size:13px;margin:0 0 10px}
+.resource-demo-note{font-size:11px;margin:0 0 10px;color:var(--brown);font-weight:700}
+.resource-actions{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-top:auto;padding-top:12px;font-size:12px}
+.resource-link{display:inline-block;background:var(--brown);color:#f7eddb;padding:10px 12px;font-weight:700;text-decoration:none}
+.resource-source{color:var(--brown);font-weight:700}
+.resource-unavailable{color:var(--muted);font-size:11px}
+.empty-results{grid-column:1/-1;padding:24px;background:var(--surface);border:1px dashed var(--line)}
+.empty-results h3{font-size:20px;margin:0 0 5px}
+.empty-results p{margin:0}
+#search-status{margin-top:12px}
+@media(max-width:760px){.page .filters{grid-template-columns:repeat(2,minmax(0,1fr))}.resource-grid{grid-template-columns:1fr}.resource-card{padding:17px}}
+@media(max-width:390px){.page .filters{grid-template-columns:1fr}.results-heading{align-items:flex-start;flex-direction:column;gap:3px}}

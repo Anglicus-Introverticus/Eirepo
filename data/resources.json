@@ -1,6 +1,70 @@
 [
-{"id":"demo-cc-book-01","title":"Sample Grade 10 Science Textbook","curriculum":"CC","type":"book","grade":"10","subject":"Science","language":"English","year":null,"tags":["official","demo"],"url":"","sourceUrl":""},
-{"id":"demo-cc-paper-01","title":"Sample O/L Mathematics Past Paper","curriculum":"CC","type":"past-paper","grade":"11","subject":"Mathematics","language":"Sinhala","year":"2024","tags":["demo"],"url":"","sourceUrl":""},
-{"id":"demo-pc-notes-01","title":"Sample Previous Curriculum Biology Notes","curriculum":"PC","type":"notes","grade":"12","subject":"Biology","language":"English","year":null,"tags":["self-study","demo"],"url":"","sourceUrl":""},
-{"id":"demo-extra-01","title":"The Wealth of Nations — Adam Smith","curriculum":"BOTH","type":"extra","grade":"12","subject":"Economics","language":"English","references":[{"subject":"Economics","grade":"12","syllabus":"Example only","page":"Not verified"}],"url":"","sourceUrl":""}
+  {
+    "id": "demo-cc-book-01",
+    "title": "Sample Grade 10 Science Textbook",
+    "description": "Placeholder entry used to test catalogue search. Replace with a verified official resource before publishing it as a real resource.",
+    "curriculum": "CC",
+    "type": "book",
+    "format": "Textbook",
+    "grade": "10",
+    "subject": "Science",
+    "language": "English",
+    "year": null,
+    "tags": ["demo"],
+    "url": "",
+    "sourceUrl": ""
+  },
+  {
+    "id": "demo-cc-paper-01",
+    "title": "Sample O/L Mathematics Past Paper",
+    "description": "Placeholder past-paper entry for testing search by title, grade, subject, language and year.",
+    "curriculum": "CC",
+    "type": "past-paper",
+    "format": "Past paper",
+    "grade": "11",
+    "subject": "Mathematics",
+    "language": "Sinhala",
+    "year": "2024",
+    "tags": ["demo"],
+    "url": "",
+    "sourceUrl": ""
+  },
+  {
+    "id": "demo-pc-notes-01",
+    "title": "Sample Previous Curriculum Biology Notes",
+    "description": "Placeholder study-notes entry for testing previous-curriculum filters.",
+    "curriculum": "PC",
+    "type": "notes",
+    "format": "Study notes",
+    "grade": "12",
+    "subject": "Biology",
+    "language": "English",
+    "year": null,
+    "tags": ["demo", "self-study"],
+    "url": "",
+    "sourceUrl": ""
+  },
+  {
+    "id": "demo-extra-01",
+    "title": "The Wealth of Nations — Adam Smith",
+    "description": "Illustrative supplementary-reading entry. The syllabus reference below is an example and has not been verified.",
+    "curriculum": "BOTH",
+    "type": "extra",
+    "format": "Book",
+    "grade": "12",
+    "subject": "Economics",
+    "language": "English",
+    "year": null,
+    "tags": ["demo"],
+    "references": [
+      {
+        "subject": "Economics",
+        "grade": "12",
+        "syllabus": "Example only",
+        "page": "Not verified"
+      }
+    ],
+    "url": "",
+    "sourceUrl": ""
+  }
 ]
