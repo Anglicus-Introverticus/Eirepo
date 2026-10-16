@@ -211,7 +211,9 @@
       } catch (inventoryError) {
         console.warn('EIRepo Drive inventory unavailable; showing the local catalogue only.', inventoryError);
       }
-      const resources = [...inventoryResources, ...baseResources.filter(item => !(item && item.tags && item.tags.includes('demo')))];
+      const resources = inventoryResources.length
+        ? [...inventoryResources, ...baseResources.filter(item => !(item && item.tags && item.tags.includes('demo')))]
+        : baseResources;
 
 
       fillOptions(form.elements.grade, valuesFor(resources, 'grade'), 'Any grade');
