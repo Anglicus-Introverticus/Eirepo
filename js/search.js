@@ -91,9 +91,15 @@
         }).filter(item => item.filename && item.url);
         finish(resolve, records);
       };
+      window.google = window.google || {};
+      window.google.visualization = window.google.visualization || {};
+      window.google.visualization.Query = window.google.visualization.Query || {};
+      window.google.visualization.Query.setResponse = payload => {
+        if (typeof window[callbackName] === 'function') window[callbackName](payload);
+      };
       script.onerror = () => finish(reject, new Error('Could not load the shared textbook inventory.'));
       script.src = 'https://docs.google.com/spreadsheets/d/' + inventorySheetId +
-        '/gviz/tq?tqx=out:json;responseHandler=' + callbackName + '&sheet=Sheet1';
+        '/gviz/tq?tqx=out:json&sheet=Sheet1';
       document.head.append(script);
     });
   }
