@@ -122,7 +122,7 @@
       item.id, item.title, item.description, item.curriculum,
       curriculumLabels[item.curriculum] || '', item.type, typeLabels[item.type] || '',
       item.grade ? 'grade ' + item.grade : '', item.grade, item.subject, item.language,
-      item.year, item.author, item.publisher, item.exam, item.tags,
+      item.year, item.author, item.publisher, item.exam, item.filename, item.folderPath, item.inventoryStatus, item.tags,
       references.map(ref => [ref.subject, ref.grade, ref.syllabus, ref.page, ref.note].join(' ')).join(' ')
     ].filter(Boolean).join(' '));
   }
