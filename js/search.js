@@ -18,10 +18,10 @@
   const inventorySheetId = '1uNcoLBXMbVNtMzqq-dM7nPHbi-YVUxiCDJOvt8EauY8';
 
   function titleFromFilename(filename) {
-    return String(filename || '').replace(/\\.pdf$/i, '').replace(/[_-]+/g, ' ')
-      .replace(/\\bnew syllabus\\b/ig, '').replace(/\\s+/g, ' ').trim()
-      .replace(/\\b(part) (i|ii|iii|iv)\\b/ig, (_, part, roman) => part + ' ' + roman.toUpperCase())
-      .replace(/\\b([a-z])([a-z]+)\\b/gi, word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase());
+    return String(filename || '').replace(/\.pdf$/i, '').replace(/[_-]+/g, ' ')
+      .replace(/\bnew syllabus\b/ig, '').replace(/\s+/g, ' ').trim()
+      .replace(/\b(part) (i|ii|iii|iv)\b/ig, (_, part, roman) => part + ' ' + roman.toUpperCase())
+      .replace(/\b([a-z])([a-z]+)\b/gi, word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase());
   }
 
   function inferSubject(filename) {
@@ -36,7 +36,7 @@
       ['Hinduism', /hinduism|hindu/], ['Civic Education', /civic/],
       ['Health and Physical Education', /health|physical education/],
       ['Practical and Technical Skills', /practical|technical skills/],
-      ['Information and Communication Technology', /information.*technology|\\bict\\b/],
+      ['Information and Communication Technology', /information.*technology|\bict\b/],
       ['Commerce', /commerce/], ['Business Studies', /business studies/],
       ['Agriculture', /agriculture/], ['Art', /art/], ['Music', /music/],
       ['Dancing', /dancing|dance/], ['Drama and Theatre', /drama|theatre/],
@@ -71,13 +71,13 @@
           const fileType = cells[2] || '';
           const size = Number(cells[3]) || 0;
           const driveUrl = cells[4] || '';
-          const gradeMatch = folder.match(/\\bGr(\\d+)\\b/i);
-          const mediumMatch = folder.match(/\\b(EM|SM|TM)gr\\d+\\b/i);
+          const gradeMatch = folder.match(/\bGr(\d+)\b/i);
+          const mediumMatch = folder.match(/\b(EM|SM|TM)gr\d+\b/i);
           const language = mediumMatch ? ({ EM: 'English', SM: 'Sinhala', TM: 'Tamil' }[mediumMatch[1].toUpperCase()]) : '';
           const grade = gradeMatch ? gradeMatch[1] : '';
           const title = titleFromFilename(filename);
           const subject = inferSubject(filename);
-          const partMatch = title.match(/\\bPart (I|II|III|IV)\\b/i);
+          const partMatch = title.match(/\bPart (I|II|III|IV)\b/i);
           return {
             id: 'lk-book-' + String(index + 1).padStart(3, '0'),
             title: (grade ? 'Grade ' + grade + ' ' : '') + title,
