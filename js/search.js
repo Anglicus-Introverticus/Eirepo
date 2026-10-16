@@ -15,6 +15,89 @@
   };
   const curriculumLabels = { CC: 'Current curriculum', PC: 'Previous curriculum', BOTH: 'Both curricula' };
 
+  const inventorySheetId = '1uNcoLBXMbVNtMzqq-dM7nPHbi-YVUxiCDJOvt8EauY8';
+
+  function titleFromFilename(filename) {
+    return String(filename || '').replace(/\\.pdf$/i, '').replace(/[_-]+/g, ' ')
+      .replace(/\\bnew syllabus\\b/ig, '').replace(/\\s+/g, ' ').trim()
+      .replace(/\\b(part) (i|ii|iii|iv)\\b/ig, (_, part, roman) => part + ' ' + roman.toUpperCase())
+      .replace(/\\b([a-z])([a-z]+)\\b/gi, word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase());
+  }
+
+  function inferSubject(filename) {
+    const f = String(filename || '').toLowerCase().replace(/[_-]+/g, ' ');
+    const subjects = [
+      ['English Literature', /english literature|literature in english/],
+      ['Mathematics', /mathematics|maths|math/],
+      ['Science', /science/], ['Sinhala', /sinhala/], ['Tamil', /tamil/],
+      ['English', /english/], ['History', /history/], ['Geography', /geography/],
+      ['Buddhism', /buddhism|buddhist/], ['Christianity', /christianity|christian/],
+      ['Catholicism', /catholic/], ['Islam', /islam|islamic/],
+      ['Hinduism', /hinduism|hindu/], ['Civic Education', /civic/],
+      ['Health and Physical Education', /health|physical education/],
+      ['Practical and Technical Skills', /practical|technical skills/],
+      ['Information and Communication Technology', /information.*technology|\\bict\\b/],
+      ['Commerce', /commerce/], ['Business Studies', /business studies/],
+      ['Agriculture', /agriculture/], ['Art', /art/], ['Music', /music/],
+      ['Dancing', /dancing|dance/], ['Drama and Theatre', /drama|theatre/],
+      ['Pali', /pali/], ['Arabic', /arabic/], ['French', /french/],
+      ['Japanese', /japanese/], ['German', /german/], ['Russian', /russian/],
+      ['Korean', /korean/], ['Chinese', /chinese/], ['Spanish', /spanish/],
+      ['Entrepreneurship Studies', /entrepreneurship/], ['Economics', /economics/],
+      ['Media Studies', /media studies/], ['Design and Technology', /design.*technology/]
+    ];
+    return (subjects.find(([_, pattern]) => pattern.test(f)) || [null])[0] || 'Other / check title';
+  }
+
+  function loadDriveInventory() {
+    return new Promise((resolve, reject) => {
+      const callbackName = '__eirepoInventoryResponse';
+      const script = document.createElement('script');
+      let settled = false;
+      const finish = (fn, value) => {
+        if (settled) return;
+        settled = true;
+        delete window[callbackName];
+        script.remove();
+        fn(value);
+      };
+      window[callbackName] = payload => {
+        const rows = payload && payload.table && Array.isArray(payload.table.rows) ? payload.table.rows : [];
+        if (!rows.length) return finish(reject, new Error('The Drive inventory returned no rows.'));
+        const records = rows.map((row, index) => {
+          const cells = (row.c || []).map(cell => cell && cell.v != null ? String(cell.v) : '');
+          const folder = cells[0] || '';
+          const filename = cells[1] || '';
+          const fileType = cells[2] || '';
+          const size = Number(cells[3]) || 0;
+          const driveUrl = cells[4] || '';
+          const gradeMatch = folder.match(/\\bGr(\\d+)\\b/i);
+          const mediumMatch = folder.match(/\\b(EM|SM|TM)gr\\d+\\b/i);
+          const language = mediumMatch ? ({ EM: 'English', SM: 'Sinhala', TM: 'Tamil' }[mediumMatch[1].toUpperCase()]) : '';
+          const grade = gradeMatch ? gradeMatch[1] : '';
+          const title = titleFromFilename(filename);
+          const subject = inferSubject(filename);
+          const partMatch = title.match(/\\bPart (I|II|III|IV)\\b/i);
+          return {
+            id: 'lk-book-' + String(index + 1).padStart(3, '0'),
+            title: (grade ? 'Grade ' + grade + ' ' : '') + title,
+            description: 'Sri Lankan school textbook from the EIRepo shared Drive inventory. PDF file. ' + (size ? 'File size: ' + size.toFixed(2) + ' MB.' : ''),
+            curriculum: 'CC', type: 'book', format: 'Textbook PDF',
+            grade, subject, language, year: null,
+            tags: ['textbook', 'drive-inventory', 'grade-' + grade, 'medium-' + (mediumMatch ? mediumMatch[1].toLowerCase() : 'unknown'), fileType],
+            url: driveUrl, sourceUrl: driveUrl, filename, folderPath: folder, fileSizeMB: size,
+            inventoryStatus: 'Imported from shared textbook inventory'
+          };
+        }).filter(item => item.filename && item.url);
+        finish(resolve, records);
+      };
+      script.onerror = () => finish(reject, new Error('Could not load the shared textbook inventory.'));
+      script.src = 'https://docs.google.com/spreadsheets/d/' + inventorySheetId +
+        '/gviz/tq?tqx=out:json;responseHandler=' + callbackName + '&sheet=Sheet1';
+      document.head.append(script);
+    });
+  }
+
   function valuesFor(resources, key) {
     return [...new Set(resources.map(item => item[key]).filter(value => value !== null && value !== undefined && String(value).trim() !== '').map(String))]
       .sort((a, b) => key === 'grade' || key === 'year' ? Number(a) - Number(b) : a.localeCompare(b));
@@ -114,8 +197,16 @@
     try {
       const response = await fetch('../data/resources.json', { headers: { Accept: 'application/json' } });
       if (!response.ok) throw new Error('Catalogue request failed (' + response.status + ').');
-      const resources = await response.json();
-      if (!Array.isArray(resources)) throw new Error('The catalogue format is not a resource list.');
+      const baseResources = await response.json();
+      if (!Array.isArray(baseResources)) throw new Error('The catalogue format is not a resource list.');
+      let inventoryResources = [];
+      try {
+        inventoryResources = await loadDriveInventory();
+      } catch (inventoryError) {
+        console.warn('EIRepo Drive inventory unavailable; showing the local catalogue only.', inventoryError);
+      }
+      const resources = [...inventoryResources, ...baseResources.filter(item => !(item && item.tags && item.tags.includes('demo')))];
+
 
       fillOptions(form.elements.grade, valuesFor(resources, 'grade'), 'Any grade');
       fillOptions(form.elements.subject, valuesFor(resources, 'subject'), 'Any subject');
@@ -140,7 +231,7 @@
         resultsNode.append(empty);
       }
       countNode.textContent = matchesList.length + (matchesList.length === 1 ? ' result' : ' results');
-      statusNode.textContent = 'Showing ' + matchesList.length + ' of ' + resources.length + ' catalogue entries' + (query ? ' for “' + params.get('q') + '”' : '') + '.';
+      statusNode.textContent = 'Showing ' + matchesList.length + ' of ' + resources.length + ' catalogue entries' + (inventoryResources.length ? ' (including ' + inventoryResources.length + ' textbooks)' : '') + (query ? ' for “' + params.get('q') + '”' : '') + '.';
     } catch (error) {
       resultsNode.replaceChildren();
       addText(resultsNode, 'p', 'empty-results', 'The catalogue could not be loaded. Please refresh and try again.');
